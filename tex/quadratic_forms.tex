@@ -1,0 +1,100 @@
+\documentclass{article}
+\input{math.tex}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{todonotes}
+
+\newtheorem{proposition}{Proposition}
+\title{Quadratic Forms in Machine Learning}
+\author{Mohit Sharma}
+
+\begin{document}
+\maketitle
+
+\begin{proposition}
+For any vector $\vx, \vb \in \R^d$ and a symmetric invertible matrix $\mM \in \R^{d \times d}$, we have
+\[
+    \vx^\T \mM \vx -2\vb^\T\vx = (\vx - \mM^\inv\vb)^\T\mM(\vx - \mM^\inv\vb) - \vb^\T \mM^\inv \vb
+\]
+\end{proposition}
+\begin{proof}
+    We can expand the RHS and check for equality with the LHS.
+
+    \begin{equation*}
+        \begin{split}
+            & (\vx - \mM^\inv\vb)^\T\mM(\vx - \mM^\inv\vb) - \vb^\T \mM^\inv \vb \\
+            & = \vx^\T \mM \vx - \vx^\T\mM\mM^\inv \vb - \vb^\T\mM^\inv\mM\vx + \vb^\T\mM^\inv \mM \mM^\inv \vb - \vb^\T\mM^\inv \vb \\
+            & =  \vx^\T \mM \vx - 2\vb^\T\vx
+        \end{split}
+    \end{equation*}
+
+    However, the interesting bit is comming up with the RHS expression.\\
+
+    For some $\vm \in \R^d$ and $c \in \R$, assume that the following holds (think why expression on RHS is the right general representation of LHS):
+    \begin{equation}
+        \label{eq:1}
+        \vx^\T \mM \vx -2\vb^\T\vx = (\vx - \vm)^\T \mM (\vx -\vm) + c
+    \end{equation}
+
+    Now, the problem reduces to finding the values of $\vm$ and $c$, if they exist.
+
+    Expanding the RHS
+    \begin{equation}
+        \label{eq:2}
+        \begin{split}
+            (\vx - \vm)^\T \mM (\vx - \vm) + c &= \vx^\T\mM\vx -2 \vm^\T\mM\vx + \vm^\T\mM\vm + c \\
+        \end{split}
+    \end{equation}
+
+    Comparing the RHS in (\ref{eq:2}) to the LHS in (\ref{eq:1}), 
+    \begin{equation}
+        \label{eq:3}
+        \begin{split}
+            &\vb = \mM\vm \implies \vm = \mM^\inv\vb \\
+            &c = - \vm^\T\mM\vm = - \vb^\T\mM^\inv\vb \\
+        \end{split}
+    \end{equation}
+
+    Invertibility of $\mM$ ensures existance and uniqueness of RHS in (\ref{eq:1}).
+
+    From (\ref{eq:3}), we have
+    \[
+        \vx^\T\mM\vx - 2\vb^\T\vx = (\vx - \mM^\inv\vb)^\T \mM (\vx - \mM^\inv\vb) - \vb^\T\mM^\inv\vb
+    \]
+\end{proof}
+
+\begin{proposition}[Sum of quadratic forms]
+    For $\vx, \vmu, \vtheta \in \R^d$ and symmetric matrices $\mSigma, \mV \in \R^{d \times d}$,   
+    \[
+        f(\vx) = (\vx - \vmu)^\T\mSigma^\inv(\vx - \vmu) + (\vx - \vtheta)^\T\mV^\inv(\vx - \vtheta)
+    \]
+    can be represented in standard form plus a constant independent of $\vx$.
+\end{proposition}
+
+\begin{proof}
+    \begin{equation*}
+        \begin{split}
+            f(\vx) &= (\vx - \vmu)^\T\mSigma^\inv(\vx - \vmu) + (\vx - \vtheta)^\T\mV^\inv(\vx - \vtheta) \\
+                   &= \vx^\T (\mSigma^\inv + \mV^\inv) \vx - 2 (\mSigma^\inv \vmu + \mV^\inv \vtheta)^\T \vx + \vmu^\T\mSigma^\inv\vmu + \vtheta^\T\mV^\inv\vtheta \\
+                   &= \vx^\T M \vx -2\vb^T\vx + c \\
+                   &= (\vx - \mM^\inv\vb)^\T \mM (\vx - \mM^\inv\vb) - \vb^\T\mM^\inv\vb + c \\
+        \end{split}    
+    \end{equation*}    
+    with
+    \begin{equation*}
+        \begin{split}
+            \mM &\triangleq \mSigma^\inv + \mV^\inv \\
+            \vb &\triangleq \mSigma^\inv \vmu + \mV^\inv \vtheta \\
+            c &\triangleq \vmu^\T\mSigma^\inv\vmu + \vtheta^\T\mV^\inv\vtheta
+        \end{split}
+    \end{equation*}
+
+    Note that we assumed the invertibility of $\mM$ which might not hold in all scenarios. However, in machine learning, we will usually have $\mSigma$ and $\mV$
+    as Positive Definite matrices. In that case, $\mM$ will be invertible (if $\mSigma$ and $\mV$ are P.D, so are $\mSigma^\inv$ and $\mV^\inv$. And sum of two P.D matrices is also P.D which in turn guarantees
+    invertibility).
+\end{proof}
+
+\end{document}
